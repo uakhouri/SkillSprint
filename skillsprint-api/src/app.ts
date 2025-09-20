@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import { config } from 'dotenv';
 import tasksRouter from './routes/tasks.js';
 import usersRouter from './routes/users.js';
+import sprintRouter from './routes/sprints.js';
 
 
 // Load environment variables
@@ -54,6 +55,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/tasks', tasksRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/sprints', sprintRouter);
 
 
 // Root endpoint

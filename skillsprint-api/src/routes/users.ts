@@ -96,4 +96,39 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// 🔢 Get total XP across all sprints
+router.get('/xp/total', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user!.userId;
+
+    const result = await pool.query(
+      'SELECT COALESCE(SUM(xp_earned), 0) AS total_xp FROM xp_logs WHERE user_id = $1',
+      [userId]
+    );
+
+    res.json({ success: true, totalXp: parseInt(result.rows[0].total_xp) });
+  } catch (error) {
+    console.error('Error fetching total XP:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch total XP' });
+  }
+});
+
+// 📦 Get XP for a specific sprint
+router.get('/xp/sprint/:sprintId', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user!.userId;
+    const { sprintId } = req.params;
+
+    const result = await pool.query(
+      'SELECT COALESCE(SUM(xp_earned), 0) AS sprint_xp FROM xp_logs WHERE user_id = $1 AND sprint_id = $2',
+      [userId, sprintId]
+    );
+
+    res.json({ success: true, sprintXp: parseInt(result.rows[0].sprint_xp) });
+  } catch (error) {
+    console.error('Error fetching sprint XP:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch sprint XP' });
+  }
+});
+
 export default router;
